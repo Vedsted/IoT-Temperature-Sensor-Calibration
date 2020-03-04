@@ -73,7 +73,7 @@ Rewriting the formula gives:
 
 V_out = 10^(dB/20) * V_in
 
-The V_out should contain the output voltage range of the temperature sensor which is 0-1750mV. Therefore, the dB we need for this application is dB = 6, which gives V_out = 2000mV (contains 1750mV).
+The V_out should contain the output voltage range of the temperature sensor which is 0-1750mV. Therefore, the dB we need for this application is dB = 6, which gives V_out = 2194.9mV ~2.2V (contains 1750mV).
 
 
 # Experiment initial settings
