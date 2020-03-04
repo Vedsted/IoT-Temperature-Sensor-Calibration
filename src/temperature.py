@@ -16,10 +16,12 @@ uart.init(115200, bits=8, parity=None, stop=1)
 #p_red = Pin('P19')
 
 adc = ADC()
-blue_pin = adc.channel(pin='P16') # Data pin
 
-p_red = Pin('P19', mode=Pin.OUT)
-p_red.value(1)
+blue_pin = adc.channel(pin='P16', attn=3) # Data pin (V_out pin on Thermistor), attn is the attenuation level
+                                            # If attn=0, then the reading of the pin will be too high. attn=3 will lower the reading to the expected output from the thermistor.
+
+p_red = Pin('P19', mode=Pin.OUT) # Use this pin to feed voltage to the Thermistor (V_dd pin on the Thermistor)
+p_red.value(1) # Set the pin to HIGH i.e. output a current to the Thermistor
 
 while True:
     val = blue_pin()
