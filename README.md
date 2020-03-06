@@ -76,7 +76,39 @@ V_out = 10^(dB/20) * V_in
 The V_out should contain the output voltage range of the temperature sensor which is 0-1750mV. Therefore, the dB we need for this application is dB = 6, which gives V_out = 2194.9mV ~2.2V (contains 1750mV).
 
 
-# Experiment initial settings
+# Experiment 1 initial settings
 Room temperature: 21.5 C
 Initial water temp: 77.5 C
 Water capacity: 0.8 l
+
+
+## Experiment 1 Analysis
+The analysis with charts can be found in the file *experiment-1/Analysis.ods*.
+
+Two charts have been made:
+
+* raw vs. median-filter - this chart shows the suggested temperatures meassured by the temperature sensor by applying the linear formula to the V_out of the sensor: (V_out-500)/10, where 10 is the default coefficient.
+
+* raw vs. coefficient median charts - this chart shows the suggested temperatures meassured by the temperature sensor by applying the linear formula to the V_out of the sensor, but by using a corrected coefficient from a lookup table: (V_out-500)/c, where c is the lookup coefficient.
+
+
+The lookup coefficients was calculated for the following ranges (in mV for the V_out of the temperature sensor):
+
+* 1300-1399 mV
+* 1200-1299 mV
+* 1100-1199 mV
+* 1000-1099 mV
+* 900 - 999 mV
+* 800 - 899 mV
+* 700 - 799 mV
+
+The method for calculating the coefficient was to sum the estimated coefficients 10 * (G_t/M_t) and divide it with the number of coefficients in the different mV ranges mentioned above, where G_t = ground truth temp and M_t = median temp, 10 = default coefficient in the linear formula.
+
+This gave the following coefficient table:
+* 1300-1399:	11.65
+* 1200-1299:	11.61
+* 1100-1199:	11.5
+* 1000-1099:	11.38
+* 900-999:	    11.07
+* 800-899:	    10.84
+* 700-799:	    10.55
