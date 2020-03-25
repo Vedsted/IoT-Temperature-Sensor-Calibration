@@ -1,2 +1,2 @@
-all
-  ./src/demo
+all:
+	cd src && ./demo
