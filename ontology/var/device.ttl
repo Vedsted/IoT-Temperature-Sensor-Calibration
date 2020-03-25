@@ -1,0 +1,48 @@
+@prefix my: <http://www.sdk.dk/junk/example#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+my:Constant a owl:Class ;
+    rdfs:label "Constant to contain name and value" .
+
+my:myDevice a my:Device ;
+    rdfs:label "My IOT Device" ;
+    owl:ObjectProperty my:myCalibration .
+
+my:Device a owl:Class ;
+    rdfs:label "IOT Device" ;
+    owl:ObjectProperty my:Calibration .
+
+my:FunctionDef a owl:Class ;
+    rdfs:label "Function class" .
+
+my:avgFunc a my:LinearFunction ;
+    rdfs:label "avgFunc" ;
+    my:LinearConstantA 8.096044e-02 ;
+    my:LinearConstantB -3.826863e+01 .
+
+my:maxFunc a my:LinearFunction ;
+    rdfs:label "maxFunc" ;
+    my:LinearConstantA 8.155091e-02 ;
+    my:LinearConstantB -3.671828e+01 .
+
+my:minFunc a my:LinearFunction ;
+    rdfs:label "minFunc" ;
+    my:LinearConstantA 8.203131e-02 ;
+    my:LinearConstantB -4.724447e+01 .
+
+my:myCalibration a my:Calibration ;
+    rdfs:label "My IOT Device Calibration" ;
+    owl:ObjectProperty my:avgFunc,
+        my:maxFunc,
+        my:minFunc .
+
+my:Calibration a owl:Class ;
+    rdfs:label "IOT Device Calibration" .
+
+my:LinearFunction a my:FunctionDef ;
+    rdfs:label "Linear function class" .
+

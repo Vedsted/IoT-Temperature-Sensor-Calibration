@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+
+from wrapping import *
+
+TTL_FILENAME = '../var/device.ttl'
+
+g = model()
+
+###############################################################################
+#################################################################### Semantics ####
+
+device = MY['Device']
+g.add((device, RDF.type, OWL['Class']))
+g.add((device, RDFS.label, Literal('IOT Device')))
+
+calibration = MY['Calibration']
+g.add((calibration, RDF.type, OWL['Class']))
+g.add((calibration, RDFS.label, Literal('IOT Device Calibration')))
+g.add((device, OWL.ObjectProperty, calibration))
+
+constant = MY['Constant']
+g.add((constant, RDF.type, OWL.Class))
+g.add((constant, RDFS.label, Literal('Constant to contain name and value')))
+
+functionDef = MY['FunctionDef']
+g.add((functionDef, RDF.type, OWL.Class))
+g.add((functionDef, RDFS.label, Literal('Function class')))
+
+lFunction = MY['LinearFunction']
+g.add((lFunction, RDF.type, functionDef))
+g.add((lFunction, RDFS.label, Literal('Linear function class')))
+
+
+###############################################################################
+############################################################# function mapping ####
+
+functions = {
+    'minFunc': {
+        'constants': {
+            'a': 0.08203131450390597,
+            'b': -47.24446823205086
+        }
+    },
+    'maxFunc': {
+        'constants': {
+            'a': 0.08155091086102222,
+            'b': -36.718278606464125
+        }
+    },
+    'avgFunc': {
+        'constants': {
+            'a': 0.08096044380894793,
+            'b': -38.26863139396976
+        } 
+    },
+}
+
+###############################################################################
+#################################################################### Device data ####
+myDevice = MY['myDevice']
+g.add((myDevice, RDF.type, device))
+g.add((myDevice, RDFS.label, Literal('My IOT Device')))
+
+###############################################################################
+#################################################################### Calibration data ####
+myCalibration = MY['myCalibration']
+g.add((myCalibration, RDF.type, calibration))
+g.add((myCalibration, RDFS.label, Literal('My IOT Device Calibration')))
+g.add((myDevice, OWL.ObjectProperty, myCalibration))
+
+###############################################################################
+#################################################################### function data ####
+for funcName in functions:
+    funcData = functions[funcName]
+    function = MY[funcName]
+    g.add((function, RDF.type, lFunction))
+    g.add((function, RDFS.label, Literal(funcName)))
+    g.add((myCalibration, OWL.ObjectProperty, function))
+
+
+    constA_Data = functions[funcName]['constants']['a']
+    g.add((function, MY.LinearConstantA, Literal(constA_Data)))
+
+    constB_Data = functions[funcName]['constants']['b']
+    g.add((function, MY.LinearConstantB, Literal(constB_Data)))
+
+###############################################################################
+########################## store-load cycle to simulate applications split ####
+
+g.serialize(TTL_FILENAME, 'turtle')
+del g
+g = Graph()
+g.parse(TTL_FILENAME, format='turtle')
+
+###############################################################################
+########################################################### Average Function query ####
+
+q_dashboard = \
+'''
+SELECT ?devicelabel  ?calibLabel ?funLabel (CONCAT("a: ", xsd:string(?cA)) as ?a) (CONCAT("b: ", xsd:string(?cB)) as ?b)
+WHERE { 
+    ?device     a                   my:Device           ;
+                rdfs:label          ?devicelabel        ;
+                owl:ObjectProperty  ?c                  .
+    ?c          rdfs:label          ?calibLabel         ;
+                owl:ObjectProperty  ?functions          .
+    ?functions  rdf:type            my:LinearFunction   ;
+                rdfs:label          ?funLabel           ;
+                my:LinearConstantA  ?cA                 ;
+                my:LinearConstantB  ?cB                 ;
+}
+'''
+pprint(query(g, q_dashboard))
